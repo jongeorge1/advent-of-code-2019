@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AoC2019.Runner": {
+      "commandName": "Project",
+      "commandLineArgs": "22 2"
+    }
+  }
+}
