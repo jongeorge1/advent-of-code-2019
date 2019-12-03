@@ -34,7 +34,7 @@
 
         private List<Point> BuildPoints(string[] path)
         {
-            var result = new List<Point>();
+            var result = new List<Point>(200000);
             var currentLocation = new Point(0, 0);
 
             foreach (string current in path)

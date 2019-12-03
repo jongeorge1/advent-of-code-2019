@@ -1,8 +1,10 @@
 ﻿namespace AoC2019.Runner
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
     using AoC2019.Solutions;
 
@@ -12,8 +14,7 @@
         {
             int day = int.Parse(args[0]);
             int part = int.Parse(args[1]);
-
-            ISolution instance = SolutionFactory.GetSolution(day, part);
+            int executions = args.Length == 2 ? 1 : int.Parse(args[2]);
 
             // Load the data
             var locationUri = new UriBuilder(Assembly.GetExecutingAssembly().CodeBase);
@@ -22,15 +23,37 @@
             string inputFileName = Path.Combine(locationDirectory, "Input", $"day{day:D2}.txt");
             string data = File.ReadAllText(inputFileName);
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            string result = string.Empty;
+            var times = new List<long>(executions);
 
-            string result = instance.Solve(data);
+            for (var i = 0; i < executions; i++)
+            {
+                ISolution instance = SolutionFactory.GetSolution(day, part);
 
-            stopwatch.Stop();
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                result = instance.Solve(data);
+
+                stopwatch.Stop();
+
+                times.Add(stopwatch.ElapsedMilliseconds);
+
+            }
 
             Console.WriteLine(result);
-            Console.WriteLine($"Result obtained in {stopwatch.ElapsedMilliseconds}ms");
+
+            if (executions == 1)
+            {
+                Console.WriteLine($"Result obtained in {times[0]}ms");
+            }
+            else
+            {
+                Console.WriteLine($"Processing executed {executions} times:");
+                Console.WriteLine($"\tAvg: {times.Average()}ms");
+                Console.WriteLine($"\tMin: {times.Min()}ms");
+                Console.WriteLine($"\tMax: {times.Max()}ms");
+            }
         }
     }
 }
