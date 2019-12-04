@@ -25,6 +25,12 @@ namespace AoC2019.Tests
         [TestCase(3, 1, "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51\r\nU98,R91,D20,R16,D67,R40,U7,R15,U6,R7", "135")]
         [TestCase(3, 2, "R75,D30,R83,U83,L12,D49,R71,U7,L72\r\nU62,R66,U55,R34,D71,R55,D58,R83", "610")]
         [TestCase(3, 2, "R98,U47,R26,D63,R33,U87,L62,D20,R33,U53,R51\r\nU98,R91,D20,R16,D67,R40,U7,R15,U6,R7", "410")]
+        [TestCase(4, 1, "111111-111111", "1")]
+        [TestCase(4, 1, "223450-223450", "0")]
+        [TestCase(4, 1, "123789-123789", "0")]
+        [TestCase(4, 2, "112233-112233", "1")]
+        [TestCase(4, 2, "123444-123444", "0")]
+        [TestCase(4, 2, "111122-111122", "1")]
         public void Tests(int day, int part, string input, string expectedResult)
         {
             ISolution solution = SolutionFactory.GetSolution(day, part);
