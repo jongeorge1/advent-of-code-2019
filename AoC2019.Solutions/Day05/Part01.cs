@@ -14,7 +14,7 @@
                 .ToArray();
 
             var vm = new IntCodeVm(memory);
-            int[] outputs = vm.Execute(1);
+            IEnumerable<int> outputs = vm.Execute(1);
 
             return outputs.LastOrDefault().ToString();
         }

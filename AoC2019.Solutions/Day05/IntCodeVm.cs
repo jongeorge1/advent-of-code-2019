@@ -11,10 +11,10 @@
             this.memory = memory;
         }
 
-        public int[] Execute(int input)
+        public IEnumerable<int> Execute(int input)
         {
             int pointer = 0;
-            var outputs = new List<int>();
+            var outputs = new List<int>(500);
 
             while (this.memory[pointer] != 99)
             {
@@ -22,7 +22,7 @@
                 pointer = instruction.Execute(this.memory, pointer, input, outputs);
             }
 
-            return outputs.ToArray();
+            return outputs;
         }
     }
 }

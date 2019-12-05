@@ -4,6 +4,7 @@
 
 namespace AoC2019.Tests
 {
+    using System.Collections.Generic;
     using System.Linq;
     using AoC2019.Solutions;
     using AoC2019.Solutions.Day05;
@@ -71,7 +72,7 @@ namespace AoC2019.Tests
         public void Day5IntCodeVmTests(int[] memory, int input, int expectedDiagnosticCode)
         {
             var vm = new IntCodeVm(memory);
-            int[] output = vm.Execute(input);
+            IEnumerable<int> output = vm.Execute(input);
             Assert.That(output.Last(), Is.EqualTo(expectedDiagnosticCode));
         }
     }
