@@ -5,7 +5,7 @@
 
     public class Instruction
     {
-        private const int MaximumParameters = 3;
+        private const int MaximumParameters = 2;
 
         private static readonly Func<int[], int, int[], int, List<int>, int>[] InstructionStrategies = new Func<int[], int, int[], int, List<int>, int>[]
         {
@@ -14,14 +14,14 @@
             // 1. Add
             (memory, pointer, parameterModes, _, __) =>
             {
-                memory[memory[pointer + 3]] = GetParameter(memory, memory[pointer + 1], parameterModes[0]) + GetParameter(memory, memory[pointer + 2], parameterModes[1]);
+                memory[memory[pointer + 3]] = GetParameter(memory, pointer + 1, parameterModes[0]) + GetParameter(memory, pointer + 2, parameterModes[1]);
                 return pointer + 4;
             },
 
             // 2. Multiply
             (memory, pointer, parameterModes, _, __) =>
             {
-                memory[memory[pointer + 3]] = GetParameter(memory, memory[pointer + 1], parameterModes[0]) * GetParameter(memory, memory[pointer + 2], parameterModes[1]);
+                memory[memory[pointer + 3]] = GetParameter(memory, pointer + 1, parameterModes[0]) * GetParameter(memory, pointer + 2, parameterModes[1]);
                 return pointer + 4;
             },
 
@@ -35,27 +35,27 @@
             // 4. Output
             (memory, pointer, parameterModes, _, outputs) =>
             {
-                outputs.Add(GetParameter(memory, memory[pointer + 1], parameterModes[0]));
+                outputs.Add(GetParameter(memory, pointer + 1, parameterModes[0]));
                 return pointer + 2;
             },
 
             // 5. Jump-if-true
-            (memory, pointer, parameterModes, _, __) => GetParameter(memory, memory[pointer + 1], parameterModes[0]) == 0 ? pointer + 3 : GetParameter(memory, memory[pointer + 2], parameterModes[1]),
+            (memory, pointer, parameterModes, _, __) => GetParameter(memory, pointer + 1, parameterModes[0]) == 0 ? pointer + 3 : GetParameter(memory, pointer + 2, parameterModes[1]),
 
             // 6. Jump-if-false
-            (memory, pointer, parameterModes, _, __) => GetParameter(memory, memory[pointer + 1], parameterModes[0]) != 0 ? pointer + 3 : GetParameter(memory, memory[pointer + 2], parameterModes[1]),
+            (memory, pointer, parameterModes, _, __) => GetParameter(memory, pointer + 1, parameterModes[0]) != 0 ? pointer + 3 : GetParameter(memory, pointer + 2, parameterModes[1]),
 
             // 7. Less than
             (memory, pointer, parameterModes, _, __) =>
             {
-                memory[memory[pointer + 3]] = GetParameter(memory, memory[pointer + 1], parameterModes[0]) < GetParameter(memory, memory[pointer + 2], parameterModes[1]) ? 1 : 0;
+                memory[memory[pointer + 3]] = GetParameter(memory, pointer + 1, parameterModes[0]) < GetParameter(memory, pointer + 2, parameterModes[1]) ? 1 : 0;
                 return pointer + 4;
             },
 
             // 8. Equal to
             (memory, pointer, parameterModes, _, __) =>
             {
-                memory[memory[pointer + 3]] = GetParameter(memory, memory[pointer + 1], parameterModes[0]) == GetParameter(memory, memory[pointer + 2], parameterModes[1]) ? 1 : 0;
+                memory[memory[pointer + 3]] = GetParameter(memory, pointer + 1, parameterModes[0]) == GetParameter(memory, pointer + 2, parameterModes[1]) ? 1 : 0;
                 return pointer + 4;
             },
         };
@@ -79,6 +79,6 @@
 
         public int Execute(int[] memory, int pointer, int input, List<int> outputs) => this.operatorFunc(memory, pointer, this.parameterModes, input, outputs);
 
-        private static int GetParameter(int[] memory, int parameter, int mode) => mode == 0 ? memory[parameter] : parameter;
+        private static int GetParameter(int[] memory, int pointer, int mode) => mode == 0 ? memory[memory[pointer]] : memory[pointer];
     }
 }
