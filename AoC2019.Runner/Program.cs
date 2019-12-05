@@ -24,9 +24,9 @@
             string data = File.ReadAllText(inputFileName);
 
             string result = string.Empty;
-            var times = new List<long>(executions);
+            var times = new List<double>(executions);
 
-            for (var i = 0; i < executions; i++)
+            for (int i = 0; i < executions; i++)
             {
                 ISolution instance = SolutionFactory.GetSolution(day, part);
 
@@ -37,8 +37,7 @@
 
                 stopwatch.Stop();
 
-                times.Add(stopwatch.ElapsedMilliseconds);
-
+                times.Add(stopwatch.Elapsed.TotalMilliseconds);
             }
 
             Console.WriteLine(result);
@@ -50,9 +49,9 @@
             else
             {
                 Console.WriteLine($"Processing executed {executions} times:");
-                Console.WriteLine($"\tAvg: {times.Average()}ms");
-                Console.WriteLine($"\tMin: {times.Min()}ms");
-                Console.WriteLine($"\tMax: {times.Max()}ms");
+                Console.WriteLine($"\tAvg: {times.Average():0.00}ms");
+                Console.WriteLine($"\tMin: {times.Min():0.00}ms");
+                Console.WriteLine($"\tMax: {times.Max():0.00}ms");
             }
         }
     }
