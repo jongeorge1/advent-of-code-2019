@@ -13,29 +13,22 @@
                 .Select(x => x.Split(new string[] { ")" }, StringSplitOptions.RemoveEmptyEntries))
                 .ToDictionary(x => x[1], x => x[0]);
 
-            List<string> youOrbitChain = this.BuildChain("YOU", directOrbits);
-            List<string> sanOrbitChain = this.BuildChain("SAN", directOrbits);
-  
-            // Find the first common ancestor
-            int i = 0;
-            while (youOrbitChain[i] == sanOrbitChain[i])
-            {
-                i++;
-            }
+            HashSet<string> youOrbitChain = this.BuildChain("YOU", directOrbits);
+            HashSet<string> sanOrbitChain = this.BuildChain("SAN", directOrbits);
 
-            return (youOrbitChain.Count - i + sanOrbitChain.Count - i - 2).ToString();
+            youOrbitChain.SymmetricExceptWith(sanOrbitChain);
+            return (youOrbitChain.Count - 2).ToString();
         }
 
-        private List<string> BuildChain(string origin, Dictionary<string, string> directOrbits)
+        private HashSet<string> BuildChain(string origin, Dictionary<string, string> directOrbits)
         {
-            var chain = new List<string>() { origin };
+            var chain = new HashSet<string>() { origin };
 
             while (directOrbits.TryGetValue(origin, out origin))
             {
                 chain.Add(origin);
             }
 
-            chain.Reverse();
             return chain;
         }
     }
