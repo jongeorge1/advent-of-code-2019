@@ -28,7 +28,7 @@
 
                 while (this.memory[pointer] != 99)
                 {
-                    var instruction = new BufferedInstruction(this.memory[pointer]);
+                    BufferedInstruction instruction = BufferedInstructionFactory.GetBufferedInstruction(this.memory[pointer]);
                     pointer = instruction.Execute(this.memory, pointer, inputs, outputs);
                 }
             });

@@ -3,6 +3,8 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
+    using System.Threading.Tasks.Dataflow;
 
     public class Part01 : ISolution
     {
@@ -13,7 +15,7 @@
                 .Select(int.Parse)
                 .ToArray();
 
-            IntCodeVm[] amps = Enumerable.Range(0, 5).Select(_ => new IntCodeVm(memory)).ToArray();
+            AsyncIntCodeVm[] amps = Enumerable.Range(0, 5).Select(_ => new AsyncIntCodeVm(memory)).ToArray();
 
             var results = new List<(int A, int B, int C, int D, int E, int Output)>(100000);
 
@@ -35,7 +37,7 @@
                                     continue;
                                 }
 
-                                results.Add((phaseA, phaseB, phaseC, phaseD, phaseE, this.GetOutput(amps, phaseA, phaseB, phaseC, phaseD, phaseE)));
+                                results.Add((phaseA, phaseB, phaseC, phaseD, phaseE, this.GetOutputAsync(amps, phaseA, phaseB, phaseC, phaseD, phaseE).Result));
                             }
                         }
                     }
@@ -45,21 +47,21 @@
             return results.Max(x => x.Output).ToString();
         }
 
-        private int GetOutput(IntCodeVm[] amps, params int[] phases)
+        private async Task<int> GetOutputAsync(AsyncIntCodeVm[] amps, params int[] phases)
         {
-            var inputs = new Queue<int>();
-            int lastOutput = 0;
+            var inputBuffer = new BufferBlock<int>();
+            var outputBuffer = new BufferBlock<int>();
+            outputBuffer.Post(0);
 
             for (int i = 0; i < amps.Length; i++)
             {
-                inputs.Enqueue(phases[i]);
-                inputs.Enqueue(lastOutput);
+                inputBuffer.Post(phases[i]);
+                inputBuffer.Post(outputBuffer.Receive());
                 amps[i].Reset();
-                IEnumerable<int> outputs = amps[i].Execute(inputs);
-                lastOutput = outputs.Last();
+                await amps[i].ExecuteAsync(inputBuffer, outputBuffer).ConfigureAwait(false);
             }
 
-            return lastOutput;
+            return outputBuffer.Receive();
         }
     }
 }
