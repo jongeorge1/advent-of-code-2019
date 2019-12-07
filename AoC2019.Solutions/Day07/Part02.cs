@@ -15,9 +15,6 @@
                 .Select(int.Parse)
                 .ToArray();
 
-
-            AsyncIntCodeVm[] amps = Enumerable.Range(0, 5).Select(_ => new AsyncIntCodeVm(memory)).ToArray();
-
             var results = new List<(int A, int B, int C, int D, int E, int Output)>(100000);
 
             for (int phaseA = 5; phaseA < 10; phaseA++)
@@ -38,7 +35,7 @@
                                     continue;
                                 }
 
-                                int result = this.GetOutputAsync(amps, phaseA, phaseB, phaseC, phaseD, phaseE).Result;
+                                int result = this.GetOutputAsync(memory, phaseA, phaseB, phaseC, phaseD, phaseE).Result;
                                 results.Add((phaseA, phaseB, phaseC, phaseD, phaseE, result));
                             }
                         }
@@ -49,12 +46,9 @@
             return results.Max(x => x.Output).ToString();
         }
 
-        private async Task<int> GetOutputAsync(AsyncIntCodeVm[] amps, params int[] phases)
+        private async Task<int> GetOutputAsync(int[] memory, params int[] phases)
         {
-            foreach (AsyncIntCodeVm current in amps)
-            {
-                current.Reset();
-            }
+            AsyncIntCodeVm[] amps = phases.Select(_ => new AsyncIntCodeVm(memory)).ToArray();
 
             BufferBlock<int>[] buffers = phases.Select(x =>
             {
