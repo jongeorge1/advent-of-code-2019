@@ -1,13 +1,11 @@
-﻿
-namespace AoC2019.Solutions.Day09
+﻿namespace AoC2019.Solutions.Day09
 {
-    using System.Collections.Generic;
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
 
     public class AsyncIntCodeVm
     {
-        private VmState state;
+        private readonly VmState state;
 
         public AsyncIntCodeVm(long[] memory)
         {

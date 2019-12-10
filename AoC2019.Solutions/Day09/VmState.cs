@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace AoC2019.Solutions.Day09
+﻿namespace AoC2019.Solutions.Day09
 {
+    using System;
+
     public class VmState
     {
         public long[] Memory { get; set; } = new long[100000];

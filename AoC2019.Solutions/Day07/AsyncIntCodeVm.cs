@@ -6,7 +6,7 @@
 
     public class AsyncIntCodeVm
     {
-        private int[] memory;
+        private readonly int[] memory;
 
         public AsyncIntCodeVm(int[] memory)
         {
