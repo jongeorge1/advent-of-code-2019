@@ -1,7 +1,6 @@
 ﻿namespace AoC2019.Solutions.IntCodeVm
 {
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
 
     public static class BufferedInstructionFactory
     {

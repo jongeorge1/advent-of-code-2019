@@ -5,17 +5,15 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
+    using AoC2019.Solutions.IntCodeVm;
 
     public class Part02 : ISolution
     {
         public string Solve(string data)
         {
-            int[] memory = data
-                .Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
+            long[] memory = AsyncIntCodeVm.CreateMemoryFromProgramInput(data);
 
-            var results = new List<(int A, int B, int C, int D, int E, int Output)>(100000);
+            var results = new List<(int A, int B, int C, int D, int E, long Output)>(100000);
 
             for (int phaseA = 5; phaseA < 10; phaseA++)
             {
@@ -35,7 +33,7 @@
                                     continue;
                                 }
 
-                                int result = this.GetOutputAsync(memory, phaseA, phaseB, phaseC, phaseD, phaseE).Result;
+                                long result = this.GetOutput(memory, phaseA, phaseB, phaseC, phaseD, phaseE);
                                 results.Add((phaseA, phaseB, phaseC, phaseD, phaseE, result));
                             }
                         }
@@ -46,26 +44,17 @@
             return results.Max(x => x.Output).ToString();
         }
 
-        private async Task<int> GetOutputAsync(int[] memory, params int[] phases)
+        private long GetOutput(long[] memory, params int[] phases)
         {
             AsyncIntCodeVm[] amps = phases.Select(_ => new AsyncIntCodeVm(memory)).ToArray();
+            amps.Connect(true);
+            amps.InitialiseInputs(phases);
 
-            BufferBlock<int>[] buffers = phases.Select(x =>
-            {
-                var buffer = new BufferBlock<int>();
-                buffer.Post(x);
-                return buffer;
-            })
-            .ToArray();
+            amps[0].InputBuffer.Post(0);
 
-            buffers[0].Post(0);
+            amps.ExecuteAllAsync().Wait();
 
-            IEnumerable<Task> tasks = Enumerable.Range(0, amps.Length)
-                .Select(i => amps[i].ExecuteAsync(buffers[i], buffers[(i + 1) % buffers.Length]));
-
-            await Task.WhenAll(tasks).ConfigureAwait(false);
-
-            return buffers[0].Receive();
+            return amps.Last().OutputBuffer.Receive();
         }
     }
 }

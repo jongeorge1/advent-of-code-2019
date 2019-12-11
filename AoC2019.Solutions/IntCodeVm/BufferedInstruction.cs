@@ -1,7 +1,6 @@
 ﻿namespace AoC2019.Solutions.IntCodeVm
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading.Tasks.Dataflow;
 
     public class BufferedInstruction

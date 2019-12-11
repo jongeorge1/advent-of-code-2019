@@ -21,11 +21,15 @@
 
             this.InputBuffer = new BufferBlock<long>();
             this.OutputBuffer = new BufferBlock<long>();
+
+            this.InstructionFactory = BufferedInstructionFactory.GetBufferedInstruction;
         }
 
         public BufferBlock<long> InputBuffer { get; set; }
 
         public BufferBlock<long> OutputBuffer { get; set; }
+
+        public Func<int, BufferedInstruction> InstructionFactory { get; set; }
 
         public static long[] CreateMemoryFromProgramInput(string input)
         {
@@ -43,7 +47,7 @@
 
                 while (this.state.Memory[pointer] != 99)
                 {
-                    BufferedInstruction instruction = BufferedInstructionFactory.GetBufferedInstruction((int)this.state.Memory[pointer]);
+                    BufferedInstruction instruction = this.InstructionFactory((int)this.state.Memory[pointer]);
                     pointer = instruction.Execute(this.state, pointer, this.InputBuffer, this.OutputBuffer);
                 }
             });

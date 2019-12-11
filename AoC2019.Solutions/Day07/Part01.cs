@@ -5,17 +5,15 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Threading.Tasks.Dataflow;
+    using AoC2019.Solutions.IntCodeVm;
 
     public class Part01 : ISolution
     {
         public string Solve(string data)
         {
-            int[] memory = data
-                .Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(int.Parse)
-                .ToArray();
+            long[] memory = AsyncIntCodeVm.CreateMemoryFromProgramInput(data);
 
-            var results = new List<(int A, int B, int C, int D, int E, int Output)>(100000);
+            var results = new List<(int A, int B, int C, int D, int E, long Output)>(100000);
 
             for (int phaseA = 0; phaseA < 5; phaseA++)
             {
@@ -45,18 +43,22 @@
             return results.Max(x => x.Output).ToString();
         }
 
-        private async Task<int> GetOutputAsync(int[] memory, params int[] phases)
+        private async Task<long> GetOutputAsync(long[] memory, params int[] phases)
         {
-            AsyncIntCodeVm[] amps = phases.Select(_ => new AsyncIntCodeVm(memory)).ToArray();
-            var inputBuffer = new BufferBlock<int>();
-            var outputBuffer = new BufferBlock<int>();
+            var inputBuffer = new BufferBlock<long>();
+            var outputBuffer = new BufferBlock<long>();
+
+            // Create the VMs, using the same input/output buffers for all to make the subsequent code simple.
+            AsyncIntCodeVm[] amps = phases.Select(
+                _ => new AsyncIntCodeVm(memory) { InputBuffer = inputBuffer, OutputBuffer = outputBuffer }).ToArray();
+
             outputBuffer.Post(0);
 
             for (int i = 0; i < amps.Length; i++)
             {
                 inputBuffer.Post(phases[i]);
                 inputBuffer.Post(outputBuffer.Receive());
-                await amps[i].ExecuteAsync(inputBuffer, outputBuffer).ConfigureAwait(false);
+                await amps[i].ExecuteAsync().ConfigureAwait(false);
             }
 
             return outputBuffer.Receive();
