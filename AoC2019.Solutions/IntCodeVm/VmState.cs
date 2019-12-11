@@ -1,4 +1,4 @@
-﻿namespace AoC2019.Solutions.Day09
+﻿namespace AoC2019.Solutions.IntCodeVm
 {
     using System;
 
