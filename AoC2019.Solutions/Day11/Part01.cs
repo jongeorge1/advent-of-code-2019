@@ -48,14 +48,8 @@
                 location = new Point(location.X + Directions[direction].X, location.Y + Directions[direction].Y);
 
                 // Post colour of current location to VM
-                if (hullLocationColours.TryGetValue(location, out colour))
-                {
-                    vm.InputBuffer.Post(colour);
-                }
-                else
-                {
-                    vm.InputBuffer.Post(0);
-                }
+                hullLocationColours.TryGetValue(location, out colour); // If there is no value, colour gets set to default(long), i.e. 0
+                vm.InputBuffer.Post(colour);
             }
 
             return paintedLocations.Count.ToString();

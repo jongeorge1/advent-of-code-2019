@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Drawing;
     using System.Linq;
+    using AoC2019.Solutions.Helpers;
 
     public class Part01 : ISolution
     {
@@ -32,7 +33,7 @@
 
         private int DistanceFromCentralPort(Point point)
         {
-            return Math.Abs(point.X) + Math.Abs(point.Y);
+            return Distance.Manhattan(point);
         }
 
         private List<Point> BuildPoints(string[] path)

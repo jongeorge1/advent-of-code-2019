@@ -39,28 +39,37 @@
             while (!vmTask.IsCompleted)
             {
                 // Get the colour
-                long colour = vm.OutputBuffer.Receive(TimeSpan.FromSeconds(1));
+                long colour;
+
+                try
+                {
+                    colour = vm.OutputBuffer.Receive(TimeSpan.FromMilliseconds(10));
+                }
+                catch (Exception)
+                {
+                    if (vmTask.IsCompleted)
+                    {
+                        // Edge case. We managed to loop between reading the last value and before the program properly ended.
+                        // This is OK, and we just break out of the loop and write the answer.
+                        break;
+                    }
+
+                    throw;
+                }
 
                 // Paint
                 hullLocationColours[location] = colour;
                 paintedLocations.Add(location);
 
                 // Get the location change
-                long turn = vm.OutputBuffer.Receive(TimeSpan.FromSeconds(1));
+                long turn = vm.OutputBuffer.Receive(TimeSpan.FromMilliseconds(10));
 
                 // Turn and move
                 direction = (direction + (turn == 0 ? -1 : 1) + 4) % 4;
                 location = new Point(location.X + Directions[direction].X, location.Y + Directions[direction].Y);
 
-                // Post colour of current location to VM
-                if (hullLocationColours.TryGetValue(location, out colour))
-                {
-                    vm.InputBuffer.Post(colour);
-                }
-                else
-                {
-                    vm.InputBuffer.Post(0);
-                }
+                hullLocationColours.TryGetValue(location, out colour); // If there is no value, colour gets set to default(long), i.e. 0
+                vm.InputBuffer.Post(colour);
             }
 
             // Build the visualisation; remove black locations from the list to ensure we only visualise what's needed.
